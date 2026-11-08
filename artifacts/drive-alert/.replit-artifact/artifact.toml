@@ -1,0 +1,24 @@
+kind = "mobile"
+previewPath = "/"
+title = "DRIVE ALERT by Denisa"
+description = "A bilingual-ready Italian mobile driving companion for drowsiness alerts, GPS stop discovery, and quick navigation to Google Maps or Waze. The first prototype clearly labels real device features separately from simulated fatigue detection."
+version = "1.0.0"
+id = "artifacts/drive-alert"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/" ]
+localPort = 24388
+
+[services.development]
+run = "pnpm --filter @workspace/drive-alert run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/drive-alert", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/drive-alert", "run", "serve" ]
+
+[services.env]
+PORT = "24388"
+BASE_PATH = "/"
