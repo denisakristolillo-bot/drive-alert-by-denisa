@@ -1,6 +1,5 @@
 import React from 'react';
 import type { ReactNode } from 'react';
-import type { TextStyle } from 'react-native';
 import {
   Platform,
   Pressable,
@@ -9,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import type { ViewStyle } from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColors } from '@/hooks/useColors';
 
@@ -45,7 +44,7 @@ export function Panel({
   style,
 }: {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }) {
   const colors = useColors();
   return (
@@ -169,7 +168,7 @@ export function BodyText({
   style,
 }: {
   children: ReactNode;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
 }) {
   const colors = useColors();
   return (

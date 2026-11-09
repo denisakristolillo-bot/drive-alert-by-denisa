@@ -1,45 +1,25 @@
-# [Project name]
+# DRIVE ALERT by Denisa
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Prototipo mobile in italiano che rileva segnali di sonnolenza con elaborazione facciale sul dispositivo e avvisi vocali, sonori e aptici.
 
-## Run & Operate
+## Run & verify
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/drive-alert run dev` — avvia Metro/Expo.
+- `pnpm --filter @workspace/drive-alert run typecheck` — verifica TypeScript.
+- `node --experimental-strip-types --test artifacts/drive-alert/logic/drowsinessRules.test.mjs` — test delle soglie.
 
-## Stack
+## Struttura
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- `artifacts/drive-alert/app/(tabs)` — schermate Guida, Rilevamento e Impostazioni.
+- `artifacts/drive-alert/logic/drowsinessRules.ts` — soglie e stato temporale degli indicatori.
+- `artifacts/drive-alert/hooks/useLocale.ts` — cataloghi offline (italiano, inglese, spagnolo, francese, tedesco, portoghese, arabo, cinese semplificato, giapponese, hindi); fallback italiano.
+- `artifacts/drive-alert/context/AppSettingsContext.tsx` — preferenze locali.
+- `artifacts/drive-alert/constants/colors.ts` — palette blu notte/oro.
 
-## Where things live
+## Compatibilità e sicurezza
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
-
-## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
-
-## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Il riconoscimento usa Vision Camera e il face detector ML Kit: richiede una build nativa personalizzata iOS/Android e non funziona in Expo Go né nel browser.
+- Video e fotogrammi sono elaborati sul dispositivo e non vengono salvati o caricati dall'app.
+- Le soglie sono prototipali: non sono validate come sistema di sicurezza. L'app non sostituisce sonno, pause o attenzione alla strada.
+- La lingua vocale italiana dipende dalle voci installate; l'app preferisce una voce che il dispositivo identifica come femminile quando disponibile.
+- Mappa, GPS, velocità, aree di sosta e routing non sono ancora implementati in questo prototipo.

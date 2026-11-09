@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AppState,
   Linking,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   View,
@@ -12,6 +11,7 @@ import type { AppStateStatus } from 'react-native';
 import { useFocusEffect, useIsFocused } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
+import { useAudioPlayer } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useLocale } from '@/hooks/useLocale';
@@ -24,13 +24,11 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '@/components/AppUI';
+import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import {
   Camera as FaceCamera,
-  useCameraDevice,
-  useCameraPermission,
-} from 'react-native-vision-camera';
-import type { Face } from 'react-native-vision-camera-face-detector';
-import { useFaceDetectorOutput } from 'react-native-vision-camera-face-detector';
+  type Face,
+} from 'react-native-vision-camera-face-detector';
 import {
   createSignalTracker,
   DETECTION_THRESHOLDS,
@@ -54,9 +52,12 @@ export default function MonitorScreen() {
     setBaselinePitch,
   } = useAppSettings();
   const { hasPermission, requestPermission } = useCameraPermission();
+  const alarmBeep = useAudioPlayer(require('../../assets/sounds/alert-beep.wav'));
   const device = useCameraDevice('front');
   const isFocused = useIsFocused();
-  const [appState, setAppState] = useState<AppStateStatus>(AppState.currentState);
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState as AppStateStatus,
+  );
   const [running, setRunning] = useState(false);
   const [faceVisible, setFaceVisible] = useState(false);
   const [eyeMetricsAvailable, setEyeMetricsAvailable] = useState(false);
@@ -64,7 +65,6 @@ export default function MonitorScreen() {
   const [alarmActive, setAlarmActive] = useState(false);
   const [activeSignals, setActiveSignals] = useState<DrowsinessSignal[]>([]);
   const [feedback, setFeedback] = useState('');
-  const [latestFrameAt, setLatestFrameAt] = useState<number | null>(null);
   const trackerRef = useRef<SignalTracker>(createSignalTracker());
   const settingsRef = useRef({ voiceAlerts, vibrationAlerts, baselinePitch });
   const lastFaceRef = useRef<Face | null>(null);
@@ -72,8 +72,31 @@ export default function MonitorScreen() {
   const lastFrameAtRef = useRef<number | null>(null);
   const alarmConditionRef = useRef(false);
   const dismissedUntilClearRef = useRef(false);
+  const italianVoiceRef = useRef<string | undefined>(undefined);
 
   settingsRef.current = { voiceAlerts, vibrationAlerts, baselinePitch };
+
+  useEffect(() => {
+    let mounted = true;
+    Speech.getAvailableVoicesAsync()
+      .then((voices) => {
+        if (!mounted) return;
+        const italianVoices = voices.filter((voice) =>
+          voice.language.toLowerCase().startsWith('it'),
+        );
+        const likelyFemale = italianVoices.find((voice) =>
+          /female|woman|donna|fem|alice|lucia|paola|elsa|sara|samantha|monica/i.test(
+            voice.name,
+          ),
+        );
+        italianVoiceRef.current =
+          likelyFemale?.identifier ?? italianVoices[0]?.identifier;
+      })
+      .catch(() => undefined);
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const thresholds = DETECTION_THRESHOLDS[sensitivity];
   const shouldRun =
@@ -84,44 +107,27 @@ export default function MonitorScreen() {
     !!device &&
     Platform.OS !== 'web';
 
-  const faceOutput = useFaceDetectorOutput({
-    performanceMode: 'fast',
-    runLandmarks: true,
-    runContours: true,
-    runClassifications: true,
-    minFaceSize: 0.18,
-    trackingEnabled: false,
-    outputResolution: 'preview',
-    cameraFacing: 'front',
-    onFacesDetected: (faces) => handleFacesDetected(faces),
-    onError: (error) => {
-      setCameraError(error.message || t.cameraError);
-      setRunning(false);
-      setAlarmActive(false);
-      Speech.stop();
-    },
-  });
-
   function handleFacesDetected(faces: Face[]) {
     const now = Date.now();
     lastFrameAtRef.current = now;
-    if (now - lastUiUpdateRef.current > 320) {
-      lastUiUpdateRef.current = now;
-      setLatestFrameAt(now);
-    }
+    const updateUi = now - lastUiUpdateRef.current > 320;
+    if (updateUi) lastUiUpdateRef.current = now;
 
     const face = faces[0];
     if (!face) {
       lastFaceRef.current = null;
-      setFaceVisible(false);
-      setEyeMetricsAvailable(false);
-      setActiveSignals([]);
+      if (updateUi) {
+        setFaceVisible(false);
+        setEyeMetricsAvailable(false);
+        setActiveSignals([]);
+      }
       alarmConditionRef.current = false;
       dismissedUntilClearRef.current = false;
       resetSignalTracker(trackerRef.current);
       if (alarmActive) {
         setAlarmActive(false);
         Speech.stop();
+        alarmBeep.pause();
       }
       return;
     }
@@ -136,12 +142,12 @@ export default function MonitorScreen() {
       thresholds,
     );
 
-    setFaceVisible(true);
-    setEyeMetricsAvailable(
-      sample.leftEyeOpenProbability !== null &&
-        sample.rightEyeOpenProbability !== null,
-    );
-    if (now - lastUiUpdateRef.current < 650) {
+    if (updateUi) {
+      setFaceVisible(true);
+      setEyeMetricsAvailable(
+        sample.leftEyeOpenProbability !== null &&
+          sample.rightEyeOpenProbability !== null,
+      );
       setActiveSignals(evaluation.activeSignals);
     }
 
@@ -151,6 +157,7 @@ export default function MonitorScreen() {
       if (alarmActive) {
         setAlarmActive(false);
         Speech.stop();
+        alarmBeep.pause();
       }
       return;
     }
@@ -160,8 +167,16 @@ export default function MonitorScreen() {
       if (!dismissedUntilClearRef.current) {
         setAlarmActive(true);
         if (settingsRef.current.voiceAlerts) {
-          Speech.speak(t.alarmTitle, { language: locale, rate: 0.95 });
+          Speech.speak(
+            'Attenzione. Possibili segnali di stanchezza. Fermati appena è sicuro.',
+            {
+              language: 'it-IT',
+              voice: italianVoiceRef.current,
+              rate: 0.92,
+            },
+          );
         }
+        alarmBeep.seekTo(0).then(() => alarmBeep.play()).catch(() => undefined);
         if (settingsRef.current.vibrationAlerts) {
           Haptics.notificationAsync(
             Haptics.NotificationFeedbackType.Warning,
@@ -170,11 +185,6 @@ export default function MonitorScreen() {
       }
     }
   }
-
-  const faceCameraProps = useMemo(
-    () => faceOutput,
-    [faceOutput],
-  );
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
@@ -185,11 +195,12 @@ export default function MonitorScreen() {
         setFaceVisible(false);
         setActiveSignals([]);
         Speech.stop();
+      alarmBeep.pause();
         resetSignalTracker(trackerRef.current);
       }
     });
     return () => subscription.remove();
-  }, []);
+  }, [alarmBeep]);
 
   useFocusEffect(
     useCallback(
@@ -257,7 +268,8 @@ export default function MonitorScreen() {
     dismissedUntilClearRef.current = true;
     setAlarmActive(false);
     Speech.stop();
-  }, []);
+    alarmBeep.pause();
+  }, [alarmBeep]);
 
   const calibratePosture = useCallback(() => {
     const face = lastFaceRef.current;
@@ -362,7 +374,6 @@ export default function MonitorScreen() {
             >
               {shouldRun ? (
                 <FaceCamera
-                  {...faceCameraProps}
                   device={device}
                   isActive={shouldRun}
                   cameraFacing="front"
@@ -620,6 +631,7 @@ function average(values: number[]): number {
 
 const styles = StyleSheet.create({
   noticePanel: { alignItems: 'flex-start' },
+  errorPanel: { borderWidth: 1 },
   panelTitle: { fontSize: 16, lineHeight: 22, fontWeight: '700' },
   cameraPanel: { padding: 12 },
   cameraTopline: {
@@ -659,7 +671,7 @@ const styles = StyleSheet.create({
   faceBadgeText: { fontSize: 12, fontWeight: '700', textAlign: 'center' },
   warningCopy: { fontSize: 13, lineHeight: 19, paddingHorizontal: 2 },
   actions: { gap: 10 },
-  alarmPanel: { borderWidth: 1, backgroundColor: '#3A1B21' },
+  alarmPanel: { borderWidth: 1 },
   signalText: { fontSize: 14, fontWeight: '600' },
   sectionTitleRow: {
     flexDirection: 'row',

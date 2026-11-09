@@ -6,19 +6,28 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "drive-alert",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "La fotocamera anteriore analizza localmente i segnali del volto per rilevare possibili segni di stanchezza."
+      }
     },
-    "android": {},
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
+    },
     "web": {
       "favicon": "./assets/images/icon.png",
       "output": "static"
     },
     "plugins": [
       "expo-router",
-      "expo-localization"
+      "expo-localization",
+      "expo-audio"
     ],
+    "newArchEnabled": true,
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
