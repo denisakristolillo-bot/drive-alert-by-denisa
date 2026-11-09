@@ -48,6 +48,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="stops"
+        options={{
+          title: t.tabStops,
+          tabBarIcon: ({ focused }) => <Feather name="map-pin" size={21} color={focused ? colors.accent : colors.mutedForeground} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: t.tabSettings,
