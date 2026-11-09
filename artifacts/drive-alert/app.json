@@ -14,6 +14,7 @@
       }
     },
     "android": {
+      "package": "com.denisa.drivealert",
       "permissions": [
         "android.permission.CAMERA"
       ],

@@ -2,7 +2,7 @@
 
 ## Stato
 
-Bozza non pubblicabile finché non sono completati i test su dispositivi reali, non viene scelto l'identificativo Android definitivo e non è disponibile l'informativa privacy pubblica.
+Bozza non pubblicabile finché non sono completati i test su dispositivi reali e non è disponibile l'informativa privacy pubblica. L'identificativo Android è stato confermato dall'utente; la sua disponibilità deve essere verificata nel Play Console.
 
 ## Nome app
 
@@ -24,10 +24,10 @@ La versione attuale non include GPS, velocità, ricerca di aree di sosta o navig
 
 ## Contatti da completare
 
-- Nome dello sviluppatore mostrato su Google Play: **[DA CONFERMARE]**
+- Nome dello sviluppatore mostrato su Google Play: **Denisa**
 - URL pubblico dell'informativa privacy: **[DA FORNIRE]**
-- Email di assistenza: **[DA FORNIRE]**
-- Identificativo Android definitivo: **[DA CONFERMARE PRIMA DELLA PRIMA BUILD]**
+- Email pubblica di assistenza confermata: **cristinantokolar@gmail.com**
+- Identificativo Android confermato: **com.denisa.drivealert**
 
 ## Asset
 

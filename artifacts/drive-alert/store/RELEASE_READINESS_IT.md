@@ -5,6 +5,7 @@
 ## Preparato nel progetto
 
 - Versione applicativa 1.0.0 e Android versionCode 1.
+- Identificativo Android `com.denisa.drivealert` e nome sviluppatore visibile «Denisa» confermati dall'utente.
 - Target SDK Android 36 configurato tramite il plugin Expo build-properties.
 - Icona Play 512×512 PNG con canale alfa e primo piano adattivo.
 - Registrazione audio e riproduzione audio in background disabilitate.
@@ -15,8 +16,8 @@ La posizione è esclusa perché GPS e navigazione non sono ancora presenti. Quan
 
 ## Blocchi prima della prima release
 
-1. Concordare l'identificativo Android definitivo. L'introspezione Expo usa ancora il valore provvisorio `com.placeholder.appid`: non deve essere usato per pubblicare.
-2. Inserire nome sviluppatore, identità del titolare e contatto di assistenza/privacy.
+1. Verificare nel Play Console la disponibilità di `com.denisa.drivealert` prima della prima release.
+2. Verificare nella revisione finale che l'identificazione del titolare sia completa e corretta. L'utente ha confermato «Denisa» come titolare: il nome e il contatto pubblico di assistenza/privacy sono inseriti nella bozza, senza presumere un'identità legale verificata.
 3. Revisionare e pubblicare l'informativa su una pagina HTTPS pubblica, poi collegarla anche nell'app.
 4. Generare e verificare la build Android firmata fuori dal flusso di pubblicazione Replit; nessun AAB firmato è stato generato qui.
 5. Completare i test reali Android su fotocamera, segni facciali, allarmi, permessi, background e modalità aereo. I test della logica non sostituiscono questi controlli.
