@@ -32,6 +32,27 @@ questo non sostituisce compilazione e avvio nativi.
 
 ## Controlli ancora da eseguire
 
+### Prova interattiva dell'anteprima browser
+
+Eseguita con viewport 402×874, senza modificare il codice:
+
+- Home → pulsante di apertura monitor: navigazione riuscita.
+- Monitor: avviso esplicito di rilevamento non disponibile nel browser/Expo Go;
+  nessuna indicazione di monitoraggio attivo simulato.
+- Impostazioni: sensibilità cambiata da bilanciata ad alta, voce e vibrazione
+  disabilitate; dopo ricaricamento i tre valori risultano conservati.
+- Navigazione Home → Monitor → Impostazioni senza crash osservati.
+- Ripristinate le impostazioni iniziali: sensibilità bilanciata, voce e
+  vibrazione abilitate.
+- Nessun errore nella console del browser durante la prova.
+
+Durante il caricamento iniziale e alcune transizioni è stato osservato contenuto
+temporaneamente vuoto prima della comparsa delle schermate. Non è stato osservato
+un blocco permanente. Questa prova verifica l'interfaccia e la persistenza delle
+preferenze, non il funzionamento fisico della voce, della vibrazione o della camera.
+
+### Prove su dispositivo ancora mancanti
+
 Eseguire esclusivamente a veicolo fermo e in un luogo sicuro. Non provocare
 sonnolenza e non guidare per provare gli allarmi.
 
