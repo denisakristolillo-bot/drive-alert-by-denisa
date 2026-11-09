@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "bT2kqVkgoeJ0jgeqVwFyM"
+uri = "file://artifacts/drive-alert/store/guida-test-android-it.html"
+type = "html"
+title = "Guida Android: installazione e prove"
+description = "Procedura da telefono quando sarà disponibile un APK, differenze tra development client e APK autonomo, limiti attuali e prove sicure. Non contiene una build installabile."
+logical_id = "6be98611-3b53-46e3-b173-b2c9814c30db"
+content_hash = "sha256:c88d1fbf324d3fe3365b4ec8b96b3d11aa6695aeee51427bfeca7ee8a18b8979"
+size = 7084
+mtime_ms = 1794229812918
+storage_uri = "gcs://replit-rams-assets-archer/rams/assets/repl:d05599be-9811-4cc2-846a-eaaecbf61dc3/6be98611-3b53-46e3-b173-b2c9814c30db/2cfa86be-d304-4431-89ec-6637b8269b9f"
+storage_version_token = "1794229844001762"
+content_type = "text/html"

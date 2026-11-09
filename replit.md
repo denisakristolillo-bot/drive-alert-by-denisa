@@ -10,7 +10,7 @@ Prototipo mobile in italiano che rileva segnali di sonnolenza con elaborazione f
 
 ## Struttura
 
-- `artifacts/drive-alert/app/(tabs)` — schermate Guida, Rilevamento e Impostazioni.
+- `artifacts/drive-alert/app/(tabs)` — schermate Guida, Rilevamento, Sosta e Impostazioni.
 - `artifacts/drive-alert/logic/drowsinessRules.ts` — soglie e stato temporale degli indicatori.
 - `artifacts/drive-alert/hooks/useLocale.ts` — cataloghi offline (italiano, inglese, spagnolo, francese, tedesco, portoghese, arabo, cinese semplificato, giapponese, hindi); fallback italiano.
 - `artifacts/drive-alert/context/AppSettingsContext.tsx` — preferenze locali.
@@ -21,5 +21,6 @@ Prototipo mobile in italiano che rileva segnali di sonnolenza con elaborazione f
 - Il riconoscimento usa Vision Camera e il face detector ML Kit: richiede una build nativa personalizzata iOS/Android e non funziona in Expo Go né nel browser.
 - Video e fotogrammi sono elaborati sul dispositivo e non vengono salvati o caricati dall'app.
 - Le soglie sono prototipali: non sono validate come sistema di sicurezza. L'app non sostituisce sonno, pause o attenzione alla strada.
+- Non dichiarare funzionante il rilevamento finché non è stato verificato su un telefono reale.
 - La lingua vocale italiana dipende dalle voci installate; l'app preferisce una voce che il dispositivo identifica come femminile quando disponibile.
-- Mappa, GPS, velocità, aree di sosta e routing non sono ancora implementati in questo prototipo.
+- La sezione Sosta include posizione, velocità e ricerca di suggerimenti vicini con apertura del navigatore esterno; non garantisce che un luogo sia sicuro. Queste funzioni richiedono verifiche native separate.

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DRIVE ALERT — installazione e prova Android</title>
+  <style>
+    body{margin:0;background:#081526;color:#f5f6fa;font:16px/1.65 system-ui,sans-serif;padding:28px 20px}
+    main{max-width:780px;margin:auto}h1,h2{color:#d6b45c;line-height:1.3}
+    section{margin:24px 0;padding:20px;background:#102237;border:1px solid #314154;border-radius:14px}
+    .notice{border-left:4px solid #d6b45c;padding:14px 18px;background:#102237}
+    a{color:#f0d27c}li{margin:10px 0}small{color:#b9c7d7}
+  </style>
+</head>
+<body><main>
+  <h1>DRIVE ALERT by Denisa</h1>
+  <p>Guida per installare e provare una versione Android di test, senza pubblicare sul Play Store.</p>
+  <p class="notice"><strong>Non è ancora disponibile un APK da scaricare.</strong>
+    Questa guida non è un'app installabile. Il rilevamento sul telefono non è ancora verificato.</p>
+
+  <section>
+    <h2>1. Cosa è già predisposto</h2>
+    <ul>
+      <li>Sezioni Guida, Rilevamento, Sosta e Impostazioni.</li>
+      <li>Fotocamera frontale con VisionCamera e face detector nativo.</li>
+      <li>Regole prototipali per occhi chiusi, occhi semichiusi, apertura prolungata della bocca e inclinazione della testa.</li>
+      <li>Attivazione del bip locale e, secondo le impostazioni, voce e vibrazione.</li>
+    </ul>
+    <p>Un'apertura della bocca può essere un possibile segnale di sbadiglio, non una diagnosi.
+      Le soglie possono produrre falsi allarmi e mancate rilevazioni.</p>
+    <p>Il controllo TypeScript, l'allineamento delle dipendenze Expo e 13 test automatici
+      della logica sono passati. Non sono prove della fotocamera o dell'audio sul dispositivo.</p>
+  </section>
+
+  <section>
+    <h2>2. Prima serve una build nativa</h2>
+    <p>Il messaggio «Rilevamento non disponibile nel browser» è corretto e non va nascosto:
+      il browser e Expo Go non contengono i moduli nativi necessari.</p>
+    <p>Il flusso integrato Replit attualmente non genera APK Android; in questo ambiente
+      non sono disponibili Java, Gradle, Android SDK o un dispositivo collegato.
+      Occorre una compilazione nativa esterna. Expo EAS Build è una possibile soluzione
+      cloud, non l'unica, e non è stato avviato da questa sessione.</p>
+    <p><strong>Development client:</strong> è un'app nativa di sviluppo che normalmente carica
+      JavaScript da un server di sviluppo raggiungibile. Il progetto non include attualmente
+      expo-dev-client: la sua configurazione e compilazione non sono state completate.</p>
+    <p><strong>APK di test autonomo:</strong> contiene anche JavaScript e risorse. È più adatto
+      a provare l'avvio senza Internet e non richiede il Play Store.
+      Non va confuso con un AAB, che non si installa direttamente dal browser del telefono.</p>
+    <p>Chi prepara la build deve controllare compatibilità dei moduli, firma, permessi,
+      inclusione del modello e del bip e fornire il link HTTPS dell'APK prodotto.
+      Non condividere chiavi di firma, password o token nella chat.</p>
+  </section>
+
+  <section>
+    <h2>3. Installazione dal telefono — quando avrai l'APK</h2>
+    <ol>
+      <li>Apri sul telefono Android il link dell'APK ricevuto da una fonte fidata.</li>
+      <li>Scarica il file con estensione <strong>.apk</strong> e aprilo dai download.</li>
+      <li>Se Android lo richiede, consenti temporaneamente al browser o al gestore file
+        di installare app da questa fonte. I nomi dei menu cambiano secondo il telefono.
+        Non disattivare Play Protect; se segnala un problema, interrompi e verifica la build.</li>
+      <li>Tocca Installa, poi Apri. Revoca dopo l'installazione il permesso di installare da quella fonte.</li>
+      <li>Se è un development client, apri il collegamento del progetto fornito con la build
+        e mantieni raggiungibile il server di sviluppo. Un normale link del sito non basta.
+        Se è un APK autonomo, non serve collegarsi a Metro.</li>
+    </ol>
+    <p><strong>Senza computer:</strong> scaricare e installare l'APK può avvenire interamente
+      sul telefono. La preparazione iniziale della build è un passaggio distinto e non è
+      ancora disponibile un percorso completo solo da telefono per questo progetto.</p>
+  </section>
+
+  <section>
+    <h2>4. Prova sicura della fotocamera e del bip</h2>
+    <p class="notice">Esegui tutte le prove seduta, a veicolo fermo in un luogo sicuro.
+      Non guidare durante le prove e non cercare di provocare sonnolenza.</p>
+    <ol>
+      <li>Apri Impostazioni: scegli la sensibilità bilanciata e abilita voce e vibrazione.
+        Controlla il volume multimediale del telefono.</li>
+      <li>Apri Rilevamento e concedi l'accesso alla fotocamera. Verifica che compaia
+        l'immagine della fotocamera frontale, non un'animazione o un'immagine di esempio.</li>
+      <li>Avvia il monitoraggio con volto illuminato e occhi aperti. Se disponibile,
+        calibra la postura guardando davanti a te.</li>
+      <li>Prova separatamente un lampeggio breve e una chiusura degli occhi più lunga,
+        sempre da ferma. Registra se l'indicatore e il bip cambiano.
+        Non presumere che debbano funzionare finché non li osservi.</li>
+      <li>Prova occhi semichiusi e apertura prolungata della bocca, una condizione alla volta.
+        Registra falsi allarmi e segnali mancanti, senza modificare continuamente la sensibilità.</li>
+      <li>Allontana il volto dall'inquadratura: l'assenza di volto non deve essere presentata
+        come prova che sei vigile. Verifica pausa, arresto dell'allarme e cambio schermata.</li>
+      <li>Chiudi l'app, attiva la modalità aereo e riaprila.
+        Per questa prova serve una build con codice e risorse disponibili localmente.
+        Controlla separatamente il bip e la voce: la voce può richiedere dati vocali offline installati.</li>
+    </ol>
+    <p>Le funzioni di ricerca delle soste e dei navigatori dipendono anche da rete,
+      servizi esterni e disponibilità delle mappe. Non usarle come prova dell'offline del rilevamento.</p>
+  </section>
+
+  <section>
+    <h2>5. Cosa registrare</h2>
+    <p>Per ogni prova annota modello del telefono, versione Android, identificativo della build,
+      condizioni di luce, permessi, risultato atteso e risultato osservato.
+      Conserva gli eventuali errori, senza includere immagini personali o credenziali.</p>
+    <p>Un test positivo isolato non garantisce prevenzione degli incidenti.
+      Il supporto iPhone richiede una build e prove native separate: un APK Android non funziona su iPhone.</p>
+    <p><strong>Stato attuale:</strong> nessun APK prodotto, installato o verificato in questa sessione.
+      Nessuna pubblicazione su Play Store avviata.</p>
+  </section>
+  <small>Riferimento Replit:
+    <a href="https://docs.replit.com/features/artifact-types/building-mobile-apps">Native Mobile Apps</a>.
+    Ricontrollare il supporto dei servizi di compilazione quando si prepara la build.</small>
+</main></body>
+</html>
