@@ -53,5 +53,13 @@
     "typescript": "~6.0.3",
     "zod": "catalog:",
     "zod-validation-error": "^3.4.0"
+  },
+  "dependencies": {
+    "expo-localization": "~58.0.5",
+    "expo-speech": "~58.0.3",
+    "react-native-nitro-image": "^0.15.2",
+    "react-native-nitro-modules": "^0.37.2",
+    "react-native-vision-camera": "5.0.11",
+    "react-native-vision-camera-face-detector": "2.0.6"
   }
 }
