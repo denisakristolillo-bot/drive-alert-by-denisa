@@ -16,6 +16,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useLocale } from '@/hooks/useLocale';
 import { useAppSettings } from '@/context/AppSettingsContext';
+import type { AlertVoice } from '@/logic/speechVoice';
+import {
+  getPreferredSpeechLanguage,
+  selectAlertVoice,
+} from '@/logic/speechVoice';
 import {
   AppScreen,
   BodyText,
@@ -72,7 +77,10 @@ export default function MonitorScreen() {
   const lastFrameAtRef = useRef<number | null>(null);
   const alarmConditionRef = useRef(false);
   const dismissedUntilClearRef = useRef(false);
-  const italianVoiceRef = useRef<string | undefined>(undefined);
+  const alertVoiceRef = useRef<AlertVoice>({
+    language: getPreferredSpeechLanguage(locale),
+    voice: undefined,
+  });
 
   settingsRef.current = { voiceAlerts, vibrationAlerts, baselinePitch };
 
@@ -81,22 +89,15 @@ export default function MonitorScreen() {
     Speech.getAvailableVoicesAsync()
       .then((voices) => {
         if (!mounted) return;
-        const italianVoices = voices.filter((voice) =>
-          voice.language.toLowerCase().startsWith('it'),
-        );
-        const likelyFemale = italianVoices.find((voice) =>
-          /female|woman|donna|fem|alice|lucia|paola|elsa|sara|samantha|monica/i.test(
-            voice.name,
-          ),
-        );
-        italianVoiceRef.current =
-          likelyFemale?.identifier ?? italianVoices[0]?.identifier;
+        alertVoiceRef.current = selectAlertVoice(voices, locale);
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (mounted) alertVoiceRef.current = selectAlertVoice([], locale);
+      });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [locale]);
 
   const thresholds = DETECTION_THRESHOLDS[sensitivity];
   const shouldRun =
@@ -167,14 +168,11 @@ export default function MonitorScreen() {
       if (!dismissedUntilClearRef.current) {
         setAlarmActive(true);
         if (settingsRef.current.voiceAlerts) {
-          Speech.speak(
-            'Attenzione. Possibili segnali di stanchezza. Fermati appena è sicuro.',
-            {
-              language: 'it-IT',
-              voice: italianVoiceRef.current,
-              rate: 0.92,
-            },
-          );
+          Speech.speak(t.speechAlert, {
+            language: alertVoiceRef.current.language,
+            voice: alertVoiceRef.current.voice,
+            rate: 0.92,
+          });
         }
         alarmBeep.seekTo(0).then(() => alarmBeep.play()).catch(() => undefined);
         if (settingsRef.current.vibrationAlerts) {

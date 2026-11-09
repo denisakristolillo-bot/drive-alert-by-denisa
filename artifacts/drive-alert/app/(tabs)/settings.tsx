@@ -78,6 +78,7 @@ export default function SettingsScreen() {
           onValueChange={setVibrationAlerts}
         />
         <BodyText>{t.alertsNote}</BodyText>
+        <BodyText>{t.voiceFallbackNote}</BodyText>
       </Panel>
 
       <Panel>
