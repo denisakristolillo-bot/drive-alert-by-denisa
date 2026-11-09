@@ -193,7 +193,7 @@ export default function MonitorScreen() {
         setFaceVisible(false);
         setActiveSignals([]);
         Speech.stop();
-      alarmBeep.pause();
+        alarmBeep.pause();
         resetSignalTracker(trackerRef.current);
       }
     });
@@ -206,8 +206,9 @@ export default function MonitorScreen() {
         setRunning(false);
         setAlarmActive(false);
         Speech.stop();
+        alarmBeep.pause();
       },
-      [],
+      [alarmBeep],
     ),
   );
 
@@ -222,10 +223,11 @@ export default function MonitorScreen() {
         setAlarmActive(false);
         setFaceVisible(false);
         Speech.stop();
+        alarmBeep.pause();
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [shouldRun, t.cameraError]);
+  }, [alarmBeep, shouldRun, t.cameraError]);
 
   const startMonitoring = useCallback(async () => {
     setCameraError('');
@@ -260,7 +262,8 @@ export default function MonitorScreen() {
     dismissedUntilClearRef.current = false;
     resetSignalTracker(trackerRef.current);
     Speech.stop();
-  }, []);
+    alarmBeep.pause();
+  }, [alarmBeep]);
 
   const stopAlarm = useCallback(() => {
     dismissedUntilClearRef.current = true;
@@ -387,6 +390,7 @@ export default function MonitorScreen() {
                     setRunning(false);
                     setAlarmActive(false);
                     Speech.stop();
+                    alarmBeep.pause();
                   }}
                   style={StyleSheet.absoluteFill}
                 />

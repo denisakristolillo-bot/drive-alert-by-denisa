@@ -16,10 +16,11 @@ Non copre le modifiche GPS e sosta sicura in attesa di integrazione.
 | Controllo | Risultato | Limite |
 | --- | --- | --- |
 | TypeScript (`pnpm --filter @workspace/drive-alert run typecheck`) | Superato | Non compila i moduli Android/iOS |
-| Test (`node --experimental-strip-types --test artifacts/drive-alert/logic/*.test.mjs`) | 9 superati, 0 falliti | Usano campioni numerici e voci di esempio, non fotogrammi reali né altoparlanti |
+| Test (`node --experimental-strip-types --test artifacts/drive-alert/logic/*.test.mjs`) | 13 superati, 0 falliti | Usano campioni numerici e voci di esempio, non fotogrammi reali né altoparlanti |
 | Allineamento dipendenze (`CI=1 pnpm --filter @workspace/drive-alert exec expo install --check`) | Superato | Non dimostra compatibilità completa durante l'esecuzione nativa |
 | Bundle Android (`CI=1 pnpm exec expo export --platform android --output-dir /tmp/drive-alert-android-verification`, dalla cartella dell'app) | Superato | Produce JavaScript/Hermes e risorse, non APK/AAB firmati |
 | Anteprima browser `/monitor`, 402×874 | Schermata visibile, con avviso di rilevamento non disponibile | Nessuna prova della fotocamera nativa |
+| Revisione statica dei messaggi di monitoraggio e sicurezza | Nessuno stato dichiara il conducente vigile o al sicuro; il testo avverte che l'app non è una garanzia | Revisione dei testi, non test con utenti o dispositivo |
 
 I test coprono lampeggio breve rispetto a chiusura prolungata, durata dello
 sbadiglio, postura calibrata, azzeramento dei segnali quando manca il volto e
@@ -59,20 +60,26 @@ sonnolenza e non guidare per provare gli allarmi.
 Per ogni prova registrare modello, sistema operativo, versione della build,
 esito osservato e difetti. Non segnare una prova come superata senza evidenza.
 
-- [ ] Compilare e installare una build Android nativa; registrare eventuali errori dei moduli.
-- [ ] Verificare concessione, rifiuto e revoca del permesso fotocamera.
-- [ ] Verificare fotocamera anteriore, assenza del volto e ritorno del volto senza indicatori di falsa sicurezza.
+- [ ] Creare e installare una development build Android nativa; registrare eventuali errori dei moduli.
+- [ ] Creare e installare una development build iOS nativa; registrare eventuali errori dei moduli.
+- [ ] Su entrambi i sistemi, verificare il consenso alla fotocamera e che il rilevamento inizi solo dopo il permesso.
+- [ ] Su entrambi i sistemi, rifiutare il permesso e verificarne la revoca dalle impostazioni; il monitor non deve apparire attivo.
+- [ ] Su entrambi i sistemi, verificare il caso senza fotocamera anteriore e l'errore mostrato senza stato di monitoraggio attivo.
+- [ ] Su entrambi i sistemi, togliere il volto dall'inquadratura e poi rimetterlo; verificare che i segnali si azzerino e che l'assenza del volto non sia presentata come conferma di vigilanza.
 - [ ] Provare occhi aperti, lampeggi brevi, chiusura prolungata, apertura della bocca e postura calibrata.
 - [ ] Valutare limiti con occhiali, scarsa illuminazione, volto parzialmente coperto e più volti.
-- [ ] Ascoltare voce e bip e verificare la vibrazione effettiva.
-- [ ] Verificare arresto dell'allarme, pausa, cambio schermata, blocco del telefono e passaggio in background.
+- [ ] Ascoltare voce e bip e verificare la vibrazione effettiva, inclusi volume basso e modalità silenziosa.
+- [ ] Verificare arresto dell'allarme, pausa, cambio schermata, blocco del telefono e passaggio in background; controllare che il bip non continui.
 - [ ] Provare dopo avvio a freddo in modalità aereo, controllando anche la disponibilità delle voci offline.
-- [ ] Ripetere i controlli pertinenti su iPhone con una build nativa.
+- [ ] Verificare che schermate e avvisi non presentino mai il rilevamento come garanzia di sicurezza.
 - [ ] Verificare separatamente GPS, permessi posizione e navigazione dopo l'integrazione del relativo lavoro.
 
 Expo Go e il browser non possono validare il modulo di rilevamento utilizzato.
-Non è disponibile un dispositivo collegato tramite ADB nell'ambiente di verifica.
-Nessun APK/AAB è stato prodotto o installato durante questa verifica.
+Nell'ambiente di verifica non sono disponibili dispositivi Android/iOS né gli
+strumenti per compilare e installare una build nativa (ADB, Xcode, Java/Gradle
+e Android SDK). Nessuna development build, APK/AAB o app iOS è stata prodotta
+o installata durante questa verifica. I controlli sopra restano quindi
+**non eseguiti** su entrambi i sistemi: i test automatici non li sostituiscono.
 
 ## Blocco rilascio
 
