@@ -16,6 +16,35 @@ out-tsc
 
 # dependencies
 node_modules
+.pnpm-store/
+
+# Local secrets and signing credentials (never commit)
+.env
+.env.*
+.envrc
+.npmrc.local
+credentials.json
+*.jks
+*.keystore
+*.p8
+*.p12
+*.pfx
+*.pem
+*.key
+*.mobileprovision
+
+# Native/build outputs, test reports and local caches
+.gradle/
+.cxx/
+build/
+web-build/
+generated-artifacts/
+playwright-report/
+test-results/
+*.apk
+*.aab
+*.ipa
+*.log
 
 # IDEs and editors
 /.idea

@@ -3,3 +3,38 @@
 
 # No need to store the pnpm store twice.
 .local
+
+# Local secrets and signing credentials
+**/.env
+**/.env.*
+**/.envrc
+**/.npmrc.local
+**/credentials.json
+**/*.jks
+**/*.keystore
+**/*.p8
+**/*.p12
+**/*.pfx
+**/*.pem
+**/*.key
+**/*.mobileprovision
+
+# Installed dependencies and generated outputs (keep shared source clients)
+**/node_modules
+**/.pnpm-store
+**/.expo
+**/.expo-shared
+**/.gradle
+**/.cxx
+**/dist
+**/build
+**/web-build
+**/generated-artifacts
+**/coverage
+**/playwright-report
+**/test-results
+**/*.tsbuildinfo
+**/*.apk
+**/*.aab
+**/*.ipa
+**/*.log
