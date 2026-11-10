@@ -13,7 +13,11 @@ eseguiti durante questa preparazione.
 - `eas.json` contiene il profilo `preview`: distribuzione interna, formato APK,
   credenziali di firma gestite dal servizio esterno e pnpm 10.26.1.
 - Il profilo produce un'app di test autonoma, non un development client:
-  non richiede `expo-dev-client` e non dipende da Metro per caricare il codice.
+  non dipende da Metro per caricare il codice.
+- È stato aggiunto anche il profilo `development`, con `developmentClient: true`,
+  e installato `expo-dev-client` nella versione SDK 58. Questo secondo profilo
+  richiede un server di sviluppo raggiungibile per caricare il codice.
+- Entrambi i profili Android specificano l'immagine cloud `latest`.
 - Non sono presenti profili di invio allo store.
 - Nome e identificativo Android restano DRIVE ALERT by Denisa e
   `com.denisa.drivealert`.
@@ -25,6 +29,13 @@ eseguiti durante questa preparazione.
    rimossa l'opzione non ammessa, senza cambiare la versione di Expo/React Native.
 2. Mancava `expo-asset`, richiesto da `expo-audio`: installata la versione
    compatibile tramite Expo e aggiunto il relativo plugin.
+
+Per ispezione dei moduli nativi, limiti della compatibilità e percorso dal
+telefono consultare `DEVELOPMENT_BUILD_ANDROID_IT.md`. Dopo l'aggiunta del
+development client sono stati riconfermati Expo Doctor (20/20), allineamento
+dipendenze, TypeScript e test logica (13/13). Il bundle Android sotto elencato
+era stato verificato nella precedente preparazione del profilo preview,
+non costituisce verifica della nuova development build.
 
 ## Controlli dopo le correzioni
 
