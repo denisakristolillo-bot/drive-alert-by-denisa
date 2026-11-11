@@ -7,6 +7,13 @@ Il rilevamento della sonnolenza resta non verificato su telefono reale.
 Nessun caricamento su GitHub e nessuna pubblicazione sul Play Store sono stati
 eseguiti durante questa preparazione.
 
+**Aggiornamento del 11 novembre 2026:** Expo raccomanda ora nuove patch SDK 58.
+Il tentativo di allineamento è stato bloccato dal tempo minimo di pubblicazione
+dei pacchetti, senza modifiche a manifest o lockfile e senza aggirare le
+protezioni. TypeScript è passato, ma il controllo aggiornato delle dipendenze
+non è superato. Gli esiti positivi successivi descrivono la verifica precedente.
+Dettagli in `DEVELOPMENT_BUILD_ANDROID_IT.md`.
+
 ## Configurazione predisposta
 
 - La cartella dell'app Expo è `artifacts/drive-alert`.

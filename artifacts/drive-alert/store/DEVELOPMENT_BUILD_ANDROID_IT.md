@@ -10,6 +10,23 @@ su un telefono fisico, da veicolo fermo.
 Il browser non include i moduli nativi e il messaggio di indisponibilità è
 corretto. Expo Go non contiene questi moduli personalizzati.
 
+### Nuova verifica delle dipendenze — 11 novembre 2026
+
+Il controllo Expo ora raccomanda patch più recenti nello stesso SDK 58,
+tra cui expo-dev-client ~58.0.19, expo-audio ~58.0.12,
+expo-speech ~58.0.4 ed Expo ~58.0.24. Il tentativo di allineamento con
+`expo install --fix` è stato bloccato da `minimumReleaseAge`: almeno una
+versione richiesta è stata pubblicata da meno di 24 ore. Non sono state
+aggiunte eccezioni né disabilitate protezioni. Manifest e lockfile sono
+rimasti invariati. TypeScript è passato nella nuova verifica.
+
+I precedenti esiti positivi sotto riportati sono storici: non rappresentano
+un controllo aggiornato delle nuove versioni consigliate. Occorre ripetere
+l'allineamento quando le versioni rispettano il tempo minimo di pubblicazione,
+poi verificare Expo Doctor e compilazione nativa. Non è provata
+un'incompatibilità hardware delle versioni installate, ma non va dichiarata
+conclusa la preparazione delle dipendenze senza risolvere questo avviso.
+
 ## Verifica dei moduli installati
 
 | Modulo | Versione rilevata | Risultato dell'ispezione |
@@ -106,7 +123,7 @@ Non viene proposta una sequenza di comandi EAS.
 Le schermate e i requisiti del servizio possono cambiare. Un esito positivo
 di Expo Doctor o del bundle JavaScript non equivale a compilazione nativa.
 
-## Controlli locali dopo la predisposizione
+## Controlli locali della predisposizione precedente
 
 - Allineamento dipendenze Expo: superato.
 - Expo Doctor: 20 controlli su 20 superati.
