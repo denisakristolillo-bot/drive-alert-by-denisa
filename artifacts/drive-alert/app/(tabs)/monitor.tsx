@@ -9,9 +9,6 @@ import {
 } from 'react-native';
 import type { AppStateStatus } from 'react-native';
 import { useFocusEffect, useIsFocused } from 'expo-router';
-import * as Haptics from 'expo-haptics';
-import * as Speech from 'expo-speech';
-import { useAudioPlayer } from 'expo-audio';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
 import { useLocale } from '@/hooks/useLocale';
@@ -29,11 +26,11 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from '@/components/AppUI';
-import { useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import {
-  Camera as FaceCamera,
-  type Face,
-} from 'react-native-vision-camera-face-detector';
+import type { Face } from 'react-native-vision-camera-face-detector';
+import type { ComponentProps } from 'react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { MonitorErrorFallback } from '@/components/MonitorErrorFallback';
+import { loadCameraModule, loadFaceCamera, requestCameraAccess } from '@/logic/monitorStartup';
 import {
   createSignalTracker,
   DETECTION_THRESHOLDS,
@@ -47,6 +44,30 @@ import type {
 } from '@/logic/drowsinessRules';
 
 export default function MonitorScreen() {
+  return (
+    <ErrorBoundary
+      FallbackComponent={MonitorErrorFallback}
+      onError={(error, stack) => console.error('[DRIVE ALERT MONITOR_INIT]', error, stack)}
+    >
+      <NativeMonitorScreen />
+    </ErrorBoundary>
+  );
+}
+
+function NativeFacePreview(
+  props: ComponentProps<typeof import('react-native-vision-camera-face-detector')['Camera']>,
+) {
+  const FaceCamera = loadFaceCamera();
+  return <FaceCamera {...props} />;
+}
+
+function NativeMonitorScreen() {
+  // These modules also initialize native code. Load them under the route boundary
+  // so an incomplete APK reports the actual module error without losing the tabs.
+  const Speech: typeof import('expo-speech') = require('expo-speech');
+  const Haptics: typeof import('expo-haptics') = require('expo-haptics');
+  const { useAudioPlayer }: typeof import('expo-audio') = require('expo-audio');
+  const { useCameraDevice, useCameraPermission } = loadCameraModule();
   const colors = useColors();
   const { t, locale } = useLocale();
   const {
@@ -56,7 +77,7 @@ export default function MonitorScreen() {
     baselinePitch,
     setBaselinePitch,
   } = useAppSettings();
-  const { hasPermission, requestPermission } = useCameraPermission();
+  const { hasPermission, canRequestPermission, requestPermission } = useCameraPermission();
   const alarmBeep = useAudioPlayer(require('../../assets/sounds/alert-beep.wav'));
   const device = useCameraDevice('front');
   const isFocused = useIsFocused();
@@ -232,12 +253,18 @@ export default function MonitorScreen() {
   const startMonitoring = useCallback(async () => {
     setCameraError('');
     setFeedback('');
-    if (!hasPermission) {
-      const granted = await requestPermission();
-      if (!granted) {
+    try {
+      const access = await requestCameraAccess({
+        hasPermission, canRequestPermission, requestPermission,
+      });
+      if (access !== 'granted') {
         setCameraError(t.permissionTitle);
         return;
       }
+    } catch (error) {
+      console.error('[DRIVE ALERT CAMERA_PERMISSION]', error);
+      setCameraError(`${t.permissionTitle}: ${error instanceof Error ? error.message : String(error)}`);
+      return;
     }
     if (!device) {
       setCameraError(t.cameraUnavailable);
@@ -250,7 +277,7 @@ export default function MonitorScreen() {
     setFaceVisible(false);
     setActiveSignals([]);
     setRunning(true);
-  }, [device, hasPermission, requestPermission, t.cameraUnavailable, t.permissionTitle]);
+  }, [device, hasPermission, canRequestPermission, requestPermission, t.cameraUnavailable, t.permissionTitle]);
 
   const pauseMonitoring = useCallback(() => {
     setRunning(false);
@@ -297,10 +324,19 @@ export default function MonitorScreen() {
   }, [setBaselinePitch]);
 
   const permissionAction = useCallback(async () => {
-    const granted = await requestPermission();
-    if (!granted) setCameraError(t.permissionTitle);
-    else setCameraError('');
-  }, [requestPermission, t.permissionTitle]);
+    try {
+      const access = await requestCameraAccess({
+        hasPermission, canRequestPermission, requestPermission,
+      });
+      if (access === 'settings') {
+        await Linking.openSettings();
+      }
+      setCameraError(access === 'granted' ? '' : t.permissionTitle);
+    } catch (error) {
+      console.error('[DRIVE ALERT CAMERA_PERMISSION]', error);
+      setCameraError(`${t.permissionTitle}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }, [hasPermission, canRequestPermission, requestPermission, t.permissionTitle]);
 
   const signalLabel: Record<DrowsinessSignal, string> = {
     eyesClosed: t.signalEyesClosed,
@@ -333,15 +369,22 @@ export default function MonitorScreen() {
           </Text>
           <BodyText>{t.permissionBody}</BodyText>
           <PrimaryButton
-            label={t.requestPermission}
+            label={canRequestPermission ? t.requestPermission : t.openSettings}
             onPress={permissionAction}
             testID="request-camera-permission"
           />
           <SecondaryButton
             label={t.openSettings}
-            onPress={() => Linking.openSettings().catch(() => undefined)}
+            onPress={() => Linking.openSettings().catch((error) => {
+              setCameraError(`${t.permissionTitle}: ${error instanceof Error ? error.message : String(error)}`);
+            })}
             testID="open-camera-settings"
           />
+          {cameraError ? (
+            <Text selectable style={[styles.warningCopy, { color: colors.destructive }]}>
+              {cameraError}
+            </Text>
+          ) : null}
         </Panel>
       ) : !device ? (
         <Panel style={styles.noticePanel}>
@@ -374,7 +417,7 @@ export default function MonitorScreen() {
               ]}
             >
               {shouldRun ? (
-                <FaceCamera
+                <NativeFacePreview
                   device={device}
                   isActive={shouldRun}
                   cameraFacing="front"
