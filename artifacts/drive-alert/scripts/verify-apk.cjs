@@ -11,6 +11,7 @@ const read = (name) => JSON.parse(fs.readFileSync(path.join(root, name), 'utf8')
 const { expo } = read('app.json');
 const eas = read('eas.json');
 const pkg = read('package.json');
+const workspacePkg = JSON.parse(fs.readFileSync(path.join(workspace, 'package.json'), 'utf8'));
 
 assert.equal(expo.owner, 'denisakristolillos-team');
 assert.equal(expo.slug, 'deni');
@@ -25,6 +26,7 @@ assert.equal(preview.developmentClient, false);
 assert.equal(preview.android.buildType, 'apk');
 assert.equal(preview.credentialsSource, 'remote');
 assert.equal(Object.keys(eas.submit || {}).length, 0);
+assert.equal(workspacePkg.packageManager, `pnpm@${preview.pnpm}`);
 assert.ok(pkg.devDependencies['babel-preset-expo'] || pkg.dependencies['babel-preset-expo']);
 
 // Exercise the actual Babel config with Android/Metro caller metadata.
@@ -45,6 +47,7 @@ const transformed = babel.transformSync(
 assert.ok(transformed.code);
 for (const name of [
   'babel-preset-expo', 'react-native-worklets/plugin', 'expo-router/entry',
+  '@react-native/metro-config',
   'expo-dev-client', 'react-native-vision-camera', 'react-native-vision-camera-face-detector',
   'react-native-nitro-modules', 'react-native-nitro-image',
 ]) {

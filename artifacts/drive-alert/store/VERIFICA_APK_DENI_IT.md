@@ -1,5 +1,39 @@
 # Verifica APK di prova — Deni — 18 novembre 2026
 
+## Ultima verifica e correzioni delle dipendenze
+
+- Confermata la configurazione locale fornita dall'utente:
+  `@denisakristolillos-team/deni`, ID
+  `09e8908b-367f-46dd-a762-3d5f99b09200`, directory
+  `artifacts/drive-alert`, package `com.denisa.drivealert`.
+- Il ramo remoto `android-apk-test` è ancora precedente all'allineamento a Deni:
+  contiene il vecchio ID. Il codice locale aggiornato non è ancora stato
+  sincronizzato; il collegamento repository/directory nel dashboard Expo resta
+  da confermare. Un push può avviare eventuali automatismi cloud configurati.
+- Aggiunto `@react-native/metro-config` 0.88.1 come dipendenza diretta richiesta
+  da React Native e Worklets. Nessun avviso di peer mancante nell'installazione.
+- Fissata la versione pnpm alla radice a 10.26.1, coerente con i profili APK.
+  Esteso il controllo `verify:apk` a queste due condizioni.
+- Installazione con lockfile congelato superata; controllo APK locale,
+  TypeScript e tutti i 13 test logici superati.
+- Esportazioni JavaScript/Hermes Android (2041 moduli) e iOS (2038 moduli)
+  superate. Queste esportazioni non sono APK né compilazioni native.
+- Server di sviluppo riavviato correttamente; anteprima browser verificata
+  dopo il caricamento iniziale dei moduli, senza modificare la grafica.
+- Expo Doctor: 19/20 controlli superati. Restano 17 raccomandazioni di
+  allineamento versioni Expo. Il nuovo tentativo di correzione automatica è
+  stato nuovamente fermato dalla protezione delle 24 ore per
+  `expo-dev-client` 58.0.21; nessuna protezione è stata aggirata. L'aggiunta
+  mirata del peer Metro è invece riuscita.
+- Il precedente errore Gradle disponibile era nel bundling JavaScript
+  (`babel-preset-expo` mancante), ora superato localmente. Non è stato
+  dimostrato un distinto errore Java/Kotlin/C++ da correggere: la compilazione
+  Gradle dei moduli fotocamera/ML Kit e la disponibilità della firma per il
+  team Deni richiedono ancora una build cloud autorizzata.
+- Nessuna modifica alle credenziali, nessun nuovo progetto, nessuna build
+  nativa e nessuna pubblicazione. Non dichiarare completata la preparazione
+  o validato il rilevamento su telefono.
+
 ## Esito
 
 Blocco Babel verificato come risolto nel bundle JavaScript Android. Configurazione
