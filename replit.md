@@ -6,6 +6,7 @@ Prototipo mobile in italiano che rileva segnali di sonnolenza con elaborazione f
 
 - `pnpm --filter @workspace/drive-alert run dev` — avvia Metro/Expo.
 - `pnpm --filter @workspace/drive-alert run typecheck` — verifica TypeScript.
+- `pnpm --filter @workspace/drive-alert run verify:apk` — controllo locale identità Deni, profilo APK, moduli e trasformazione Babel; non avvia build.
 - `node --experimental-strip-types --test artifacts/drive-alert/logic/drowsinessRules.test.mjs` — test delle soglie.
 
 ## Struttura
@@ -15,6 +16,13 @@ Prototipo mobile in italiano che rileva segnali di sonnolenza con elaborazione f
 - `artifacts/drive-alert/hooks/useLocale.ts` — cataloghi offline (italiano, inglese, spagnolo, francese, tedesco, portoghese, arabo, cinese semplificato, giapponese, hindi); fallback italiano.
 - `artifacts/drive-alert/context/AppSettingsContext.tsx` — preferenze locali.
 - `artifacts/drive-alert/constants/colors.ts` — palette blu notte/oro.
+
+## Expo / EAS
+
+- Unica configurazione Expo/EAS in `artifacts/drive-alert`; eseguire i comandi Expo/EAS da quella directory mantenendo l'intero workspace.
+- Progetto esistente: `@denisakristolillos-team/deni`, ID `09e8908b-367f-46dd-a762-3d5f99b09200`.
+- `preview` produce un APK interno autonomo; `development` mantiene il development client. Nessun invio automatico agli store.
+- Non avviare nuove build senza aver mostrato le verifiche e ottenuto autorizzazione; non modificare credenziali.
 
 ## Compatibilità e sicurezza
 

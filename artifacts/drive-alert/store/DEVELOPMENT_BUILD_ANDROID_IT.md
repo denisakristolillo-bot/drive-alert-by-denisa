@@ -1,5 +1,11 @@
 # Development build Android — DRIVE ALERT by Denisa
 
+> Stato corrente al 18 novembre 2026 in `VERIFICA_APK_DENI_IT.md`.
+> Il collegamento locale è ora `@denisakristolillos-team/deni`.
+> Il bundle Android passa; resta da chiudere l'allineamento delle dipendenze.
+> Le indicazioni seguenti sul collegamento assente e sul vecchio slug sono
+> storiche e non vanno usate per riconfigurare il progetto.
+
 ## Stato e limiti
 
 Configurazione locale predisposta, non APK compilato. Nessun invio al Play

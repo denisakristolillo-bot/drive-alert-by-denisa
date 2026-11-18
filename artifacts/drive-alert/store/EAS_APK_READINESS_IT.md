@@ -1,5 +1,10 @@
 # APK Android di prova — preparazione
 
+> Aggiornamento 18 novembre 2026: consultare `VERIFICA_APK_DENI_IT.md` per lo
+> stato corrente. L'associazione locale è ora Deni; il bundle Android passa.
+> Expo Doctor è 19/20: le patch consigliate sono bloccate temporaneamente dal
+> tempo minimo di pubblicazione. Gli esiti sotto sono storici.
+
 ## Stato
 
 **Profilo APK predisposto; compilazione EAS non avviata; nessun APK prodotto.**

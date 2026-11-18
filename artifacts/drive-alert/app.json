@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "DRIVE ALERT by Denisa",
-    "slug": "drive-alert",
+    "slug": "deni",
+    "owner": "denisakristolillos-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -73,7 +74,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "f216315a-d91d-4b56-946a-3bf6d3758511"
+        "projectId": "09e8908b-367f-46dd-a762-3d5f99b09200"
       }
     }
   }
