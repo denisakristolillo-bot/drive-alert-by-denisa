@@ -1,5 +1,8 @@
 # Verifica APK di prova — Deni — 18 novembre 2026
 
+> Stato storico. La verifica del 20 novembre è in `PREPARAZIONE_APK_2026_11_20_IT.md`.
+> Le modifiche di quella preparazione restano separate dall'originale fino all'approvazione.
+
 ## Ultima verifica e correzioni delle dipendenze
 
 - Confermata la configurazione locale fornita dall'utente:

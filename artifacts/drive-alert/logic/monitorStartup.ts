@@ -27,6 +27,17 @@ export function loadFaceCamera(
   return detector.Camera;
 }
 
+export function loadFaceOutputFactory(
+  load: () => FaceDetectorModule = () =>
+    require('react-native-vision-camera-face-detector'),
+): FaceDetectorModule['createFaceDetectorOutput'] {
+  const detector = load();
+  if (typeof detector.createFaceDetectorOutput !== 'function') {
+    throw new Error('react-native-vision-camera-face-detector: factory output nativa non disponibile.');
+  }
+  return detector.createFaceDetectorOutput;
+}
+
 export async function requestCameraAccess(permission: {
   hasPermission: boolean;
   canRequestPermission: boolean;

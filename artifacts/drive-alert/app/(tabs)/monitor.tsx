@@ -27,10 +27,10 @@ import {
   SecondaryButton,
 } from '@/components/AppUI';
 import type { Face } from 'react-native-vision-camera-face-detector';
-import type { ComponentProps } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { MonitorErrorFallback } from '@/components/MonitorErrorFallback';
-import { loadCameraModule, loadFaceCamera, requestCameraAccess } from '@/logic/monitorStartup';
+import { NativeFacePreview } from '@/components/NativeFacePreview';
+import { loadCameraModule, requestCameraAccess } from '@/logic/monitorStartup';
 import {
   createSignalTracker,
   DETECTION_THRESHOLDS,
@@ -52,13 +52,6 @@ export default function MonitorScreen() {
       <NativeMonitorScreen />
     </ErrorBoundary>
   );
-}
-
-function NativeFacePreview(
-  props: ComponentProps<typeof import('react-native-vision-camera-face-detector')['Camera']>,
-) {
-  const FaceCamera = loadFaceCamera();
-  return <FaceCamera {...props} />;
 }
 
 function NativeMonitorScreen() {
@@ -420,13 +413,6 @@ function NativeMonitorScreen() {
                 <NativeFacePreview
                   device={device}
                   isActive={shouldRun}
-                  cameraFacing="front"
-                  runClassifications
-                  runContours
-                  runLandmarks
-                  performanceMode="fast"
-                  minFaceSize={0.18}
-                  outputResolution="preview"
                   onFacesDetected={handleFacesDetected}
                   onError={(error) => {
                     setCameraError(error.message || t.cameraError);

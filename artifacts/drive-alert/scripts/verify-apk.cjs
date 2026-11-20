@@ -17,6 +17,8 @@ assert.equal(expo.owner, 'denisakristolillos-team');
 assert.equal(expo.slug, 'deni');
 assert.equal(expo.extra.eas.projectId, '09e8908b-367f-46dd-a762-3d5f99b09200');
 assert.equal(expo.android.package, 'com.denisa.drivealert');
+assert.ok(Number.isInteger(expo.android.versionCode) && expo.android.versionCode >= 2,
+  'The corrected Android candidate must be distinguishable from versionCode 1.');
 for (const file of ['app.json', 'eas.json']) {
   assert.equal(fs.existsSync(path.join(workspace, file)), false, `Duplicate root ${file}`);
 }

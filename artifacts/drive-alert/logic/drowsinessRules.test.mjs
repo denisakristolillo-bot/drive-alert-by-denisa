@@ -8,6 +8,20 @@ import {
 
 const balanced = DETECTION_THRESHOLDS.balanced;
 
+test('detects sustained half-closed eyes without classifying them as closed', () => {
+  const tracker = createSignalTracker();
+  const narrowed = sample({ leftEyeOpenProbability: 0.35, rightEyeOpenProbability: 0.35 });
+  updateDrowsinessSignals(tracker, narrowed, 1000, null, balanced);
+  assert.equal(updateDrowsinessSignals(
+    tracker, narrowed, 1000 + balanced.eyesNarrowMs - 1, null, balanced,
+  ).shouldAlarm, false);
+  const evaluation = updateDrowsinessSignals(
+    tracker, narrowed, 1000 + balanced.eyesNarrowMs, null, balanced,
+  );
+  assert.equal(evaluation.shouldAlarm, true);
+  assert.deepEqual(evaluation.activeSignals, ['eyesNarrow']);
+});
+
 function sample(overrides = {}) {
   return {
     faceVisible: true,
