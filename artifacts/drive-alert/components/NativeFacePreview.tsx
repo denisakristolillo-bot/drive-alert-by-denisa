@@ -32,3 +32,49 @@ export function NativeFacePreview({ onFacesDetected, onError, ...cameraProps }: 
       };
     } catch (error) {
       return {
+        detector: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
+    }
+  });
+
+  useEffect(() => {
+    if (detectorState.error) onError(detectorState.error);
+  }, [detectorState.error, onError]);
+  const faceDetector = detectorState.detector;
+
+  const deliverFaces = useCallback((faces: FaceDetectionResult[]) => {
+    callbacksRef.current.onFacesDetected(faces);
+  }, []);
+  const deliverError = useCallback((message: string) => {
+    callbacksRef.current.onError(new Error(message));
+  }, []);
+
+  const frameOutput = useFrameOutput({
+    pixelFormat: 'yuv',
+    onFrame(frame) {
+      'worklet';
+      try {
+        const now = Date.now();
+        if (now - lastAnalysisAt.value < 100) return;
+        lastAnalysisAt.value = now;
+
+        if (!faceDetector) return;
+
+        const nativeFaces: Face[] = faceDetector.detectFaces(frame);
+        const faces: FaceDetectionResult[] = [];
+        for (let index = 0; index < nativeFaces.length; index++) {
+          faces.push(copyFaceDetectionResult(nativeFaces[index]));
+        }
+        scheduleOnRN(deliverFaces, faces);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        scheduleOnRN(deliverError, message);
+      } finally {
+        frame.dispose();
+      }
+    },
+  });
+
+  return <Camera {...cameraProps} outputs={[frameOutput]} onError={onError} />;
+}
