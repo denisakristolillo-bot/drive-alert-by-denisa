@@ -8,7 +8,8 @@ export function loadCameraModule(
   const camera = load();
   if (
     typeof camera.useCameraDevice !== 'function' ||
-    typeof camera.useCameraPermission !== 'function'
+    typeof camera.useCameraPermission !== 'function' ||
+    typeof camera.useFrameOutput !== 'function'
   ) {
     throw new Error('react-native-vision-camera: API fotocamera non disponibile in questa installazione.');
   }
@@ -16,26 +17,15 @@ export function loadCameraModule(
 }
 
 // ML Kit/Nitro is initialized only when the user actually starts monitoring.
-export function loadFaceCamera(
+export function loadFaceDetectorFactory(
   load: () => FaceDetectorModule = () =>
     require('react-native-vision-camera-face-detector'),
-): FaceDetectorModule['Camera'] {
+): FaceDetectorModule['createFaceDetector'] {
   const detector = load();
-  if (!detector.Camera) {
-    throw new Error('react-native-vision-camera-face-detector: componente Camera non disponibile.');
+  if (typeof detector.createFaceDetector !== 'function') {
+    throw new Error('react-native-vision-camera-face-detector: factory frame non disponibile.');
   }
-  return detector.Camera;
-}
-
-export function loadFaceOutputFactory(
-  load: () => FaceDetectorModule = () =>
-    require('react-native-vision-camera-face-detector'),
-): FaceDetectorModule['createFaceDetectorOutput'] {
-  const detector = load();
-  if (typeof detector.createFaceDetectorOutput !== 'function') {
-    throw new Error('react-native-vision-camera-face-detector: factory output nativa non disponibile.');
-  }
-  return detector.createFaceDetectorOutput;
+  return detector.createFaceDetector;
 }
 
 export async function requestCameraAccess(permission: {
