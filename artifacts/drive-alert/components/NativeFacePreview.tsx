@@ -44,7 +44,7 @@ export function NativeFacePreview({ onFacesDetected, onError, ...cameraProps }: 
   const faceDetector = detectorState.detector;
 
   const deliverFaces = useCallback((faces: FaceDetectionResult[]) => {
-    callbacksRef.current.onFacesDetected(faces);
+    callbacksRef.current.onFacesDetected(faces as unknown as Face[]);
   }, []);
   const deliverError = useCallback((message: string) => {
     callbacksRef.current.onError(new Error(message));
