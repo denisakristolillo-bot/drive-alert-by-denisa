@@ -1,10 +1,10 @@
-import type { Face, FaceDetectorOptions } from 'react-native-vision-camera-face-detector';
+import type { Face, FaceDetectorOutputOptions } from 'react-native-vision-camera-face-detector';
 
-// Use the detector object's frame API instead of the CameraOutput factory. This
-// avoids the Android createFaceDetectorOutput path that crashes in this app's APK.
+// Keep these primitive options explicit across the JS -> Nitro -> Kotlin bridge.
 // Classification supplies eye probabilities; contours/landmarks supply mouth geometry.
 export const FACE_DETECTOR_OPTIONS = Object.freeze({
   cameraFacing: 'front',
+  mirrorMode: 'auto',
   autoMode: false,
   performanceMode: 'fast',
   runLandmarks: true,
@@ -12,57 +12,66 @@ export const FACE_DETECTOR_OPTIONS = Object.freeze({
   runClassifications: true,
   trackingEnabled: false,
   minFaceSize: 0.18,
-} satisfies FaceDetectorOptions);
+  outputResolution: 'preview',
+} satisfies Omit<FaceDetectorOutputOptions, 'onFacesDetected' | 'onError'>);
 
-export interface FacePoint {
-  x: number;
-  y: number;
+export interface FaceDetectorCallbacks {
+  onFacesDetected: (faces: Face[]) => void;
+  onError: (error: Error) => void;
 }
 
-// Only plain data needed by drowsiness classification crosses back to the RN
-// runtime; Nitro HybridObject instances themselves are not sent across runtimes.
-export interface FaceDetectionResult {
-  leftEyeOpenProbability?: number;
-  rightEyeOpenProbability?: number;
-  pitchAngle: number;
-  contours?: {
-    UPPER_LIP_BOTTOM?: FacePoint[];
-    LOWER_LIP_TOP?: FacePoint[];
-  };
-  landmarks?: {
-    MOUTH_LEFT?: FacePoint;
-    MOUTH_RIGHT?: FacePoint;
-  };
-}
+/**
+ * One output per mounted monitoring session, not one per face/UI update.
+ * Construction is explicit: the caller waits for Camera.onConfigured.
+ */
+export function createFaceDetectorSession<T extends object>(
+  createOutput: (options: FaceDetectorOutputOptions) => T,
+  initialCallbacks: FaceDetectorCallbacks,
+) {
+  let callbacks = initialCallbacks;
+  let output: T | undefined;
+  let failure: Error | undefined;
+  let stopped = false;
 
-function copyPoints(points: readonly FacePoint[] | undefined): FacePoint[] | undefined {
-  'worklet';
-  if (!points) return undefined;
-  const copied: FacePoint[] = [];
-  for (let index = 0; index < points.length; index++) {
-    copied.push({ x: points[index].x, y: points[index].y });
-  }
-  return copied;
-}
-
-function copyPoint(point: FacePoint | undefined): FacePoint | undefined {
-  'worklet';
-  return point ? { x: point.x, y: point.y } : undefined;
-}
-
-export function copyFaceDetectionResult(face: Face): FaceDetectionResult {
-  'worklet';
   return {
-    leftEyeOpenProbability: face.leftEyeOpenProbability,
-    rightEyeOpenProbability: face.rightEyeOpenProbability,
-    pitchAngle: face.pitchAngle,
-    contours: {
-      UPPER_LIP_BOTTOM: copyPoints(face.contours?.UPPER_LIP_BOTTOM),
-      LOWER_LIP_TOP: copyPoints(face.contours?.LOWER_LIP_TOP),
+    resume() {
+      // React Strict Mode may replay effect cleanup/setup without unmounting
+      // Camera. Re-enable delivery without replacing an attached native output.
+      stopped = false;
     },
-    landmarks: {
-      MOUTH_LEFT: copyPoint(face.landmarks?.MOUTH_LEFT),
-      MOUTH_RIGHT: copyPoint(face.landmarks?.MOUTH_RIGHT),
+    updateCallbacks(next: FaceDetectorCallbacks) {
+      callbacks = next;
+    },
+    start(): T | undefined {
+      if (stopped) return undefined;
+      if (failure) throw failure;
+      if (output) return output;
+      try {
+        const created = createOutput({
+          ...FACE_DETECTOR_OPTIONS,
+          onFacesDetected: faces => {
+            if (!stopped) callbacks.onFacesDetected(faces);
+          },
+          onError: error => {
+            if (!stopped) callbacks.onError(error);
+          },
+        });
+        if (!created) {
+          throw new Error('La factory nativa ha restituito un output nullo.');
+        }
+        output = created;
+        return output;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        failure = new Error(`FACE_OUTPUT_CREATE: ${message}`, { cause: error });
+        throw failure;
+      }
+    },
+    stop() {
+      stopped = true;
+      // Camera owns the attached output. Do not dispose synchronously here:
+      // the Android detector may still be analyzing a frame on its executor.
+      // The session and output become collectible after the view detaches.
     },
   };
 }
