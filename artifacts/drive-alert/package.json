@@ -67,6 +67,6 @@
     "react-native-nitro-image": "^0.15.2",
     "react-native-nitro-modules": "^0.37.2",
     "react-native-vision-camera": "5.2.3",
-    "react-native-vision-camera-face-detector": "2.1.0"
+    "react-native-vision-camera-face-detector": "2.1.0",
+    "react-native-vision-camera-worklets": "5.2.3"
   }
-}
