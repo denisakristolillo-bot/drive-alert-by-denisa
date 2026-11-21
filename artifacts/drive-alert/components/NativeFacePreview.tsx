@@ -1,53 +1,34 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import type { CameraOutput, CameraViewProps } from 'react-native-vision-camera';
-import type { FaceDetectorCallbacks } from '@/logic/faceDetectorSession';
-import { createFaceDetectorSession } from '@/logic/faceDetectorSession';
-import { loadCameraModule, loadFaceOutputFactory } from '@/logic/monitorStartup';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { CameraViewProps } from 'react-native-vision-camera';
+import { scheduleOnRN } from 'react-native-worklets';
+import { useSharedValue } from 'react-native-reanimated';
+import type { Face } from 'react-native-vision-camera-face-detector';
+import { FACE_DETECTOR_OPTIONS, copyFaceDetectionResult } from '@/logic/faceDetectorSession';
+import type { FaceDetectionResult } from '@/logic/faceDetectorSession';
+import { loadCameraModule, loadFaceDetectorFactory } from '@/logic/monitorStartup';
 
-type Props = Omit<CameraViewProps, 'onError' | 'onConfigured' | 'outputs'> &
-  FaceDetectorCallbacks;
+type Props = Omit<CameraViewProps, 'onError' | 'onConfigured' | 'outputs'> & {
+  onFacesDetected: (faces: FaceDetectionResult[]) => void;
+  onError: (error: Error) => void;
+};
 
-/**
- * Deliberately bypass the detector library's Camera/useFaceDetectorOutput wrapper:
- * in 2.0.6 and 2.1.0 its useMemo depends on fresh rest-options on every render.
- * Preview is configured first; the real ML Kit output is attached exactly once.
- */
+type DetectorState = {
+  detector: ReturnType<ReturnType<typeof loadFaceDetectorFactory>> | null;
+  error: Error | null;
+};
+
 export function NativeFacePreview({ onFacesDetected, onError, ...cameraProps }: Props) {
-  const { Camera } = loadCameraModule();
-  const [outputs, setOutputs] = useState<CameraOutput[]>([]);
-  const [startupError, setStartupError] = useState<Error | null>(null);
-  const [session] = useState(() => createFaceDetectorSession(
-    options => loadFaceOutputFactory()(options),
-    { onFacesDetected, onError },
-  ));
-  session.updateCallbacks({ onFacesDetected, onError });
+  const { Camera, useFrameOutput } = loadCameraModule();
+  const callbacksRef = useRef({ onFacesDetected, onError });
+  callbacksRef.current = { onFacesDetected, onError };
+  const lastAnalysisAt = useSharedValue(0);
 
-  useEffect(() => {
-    session.resume();
-    return () => session.stop();
-  }, [session]);
-
-  const handleConfigured = useCallback(() => {
+  // This uses the frame detector API instead of the crashing output factory.
+  const [detectorState] = useState<DetectorState>(() => {
     try {
-      const output = session.start();
-      if (output) {
-        setOutputs(current =>
-          current.length === 1 && current[0] === output ? current : [output],
-        );
-      }
+      return {
+        detector: loadFaceDetectorFactory()(FACE_DETECTOR_OPTIONS),
+        error: null,
+      };
     } catch (error) {
-      setStartupError(error instanceof Error ? error : new Error(String(error)));
-    }
-  }, [session]);
-
-  if (startupError) throw startupError;
-
-  return (
-    <Camera
-      {...cameraProps}
-      outputs={outputs}
-      onConfigured={handleConfigured}
-      onError={onError}
-    />
-  );
-}
+      return {
