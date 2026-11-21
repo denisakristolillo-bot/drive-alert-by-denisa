@@ -8,7 +8,7 @@ import type { FaceDetectionResult } from '@/logic/faceDetectorSession';
 import { loadCameraModule, loadFaceDetectorFactory } from '@/logic/monitorStartup';
 
 type Props = Omit<CameraViewProps, 'onError' | 'onConfigured' | 'outputs'> & {
-  onFacesDetected: (faces: FaceDetectionResult[]) => void;
+  onFacesDetected: (faces: Face[]) => void;
   onError: (error: Error) => void;
 };
 
