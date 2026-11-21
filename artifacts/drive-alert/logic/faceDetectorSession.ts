@@ -8,7 +8,7 @@ export const FACE_DETECTOR_OPTIONS = Object.freeze({
   autoMode: false,
   performanceMode: 'fast',
   runLandmarks: true,
-  runContours: true,
+  runContours: false,
   runClassifications: true,
   trackingEnabled: false,
   minFaceSize: 0.18,
